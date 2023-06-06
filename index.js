@@ -1,5 +1,8 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
+const express = require('express')
+
+var fs = require('fs');
 
 const createWindow = () => {
     // Create the browser window.
@@ -36,4 +39,37 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
+})
+
+
+const expressApp = express()
+const port = 3000
+
+expressApp.get('/', async (req, res) => {
+    await fs.promises.writeFile('aliakbar.js', `const { Builder, By, Key, until } = require('selenium-webdriver');
+
+    const callSelinium = async () => {
+        let driver = await new Builder().forBrowser('chrome').build();
+    
+        try {
+            await driver.get('http://www.google.com/ncr');
+        } finally {
+            await driver.quit();
+        }
+    }
+    
+    module.exports = {
+        callSelinium
+    }
+`);
+
+    const { callSelinium } = require("./aliakbar");
+
+    callSelinium()
+
+    res.send('Hello World!')
+})
+
+expressApp.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
 })
