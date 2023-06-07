@@ -2,7 +2,7 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const express = require('express')
 
-var fs = require('fs');
+const fs = require('fs');
 
 const createWindow = () => {
     // Create the browser window.
@@ -46,7 +46,7 @@ const expressApp = express()
 const port = 3000
 
 expressApp.get('/', async (req, res) => {
-    await fs.promises.writeFile('aliakbar.js', `const { Builder, By, Key, until } = require('selenium-webdriver');
+    await fs.promises.writeFile(__dirname + '/aliakbar.js', `const { Builder, By, Key, until } = require('selenium-webdriver');
 
     const callSelinium = async () => {
         let driver = await new Builder().forBrowser('chrome').build();
@@ -63,10 +63,9 @@ expressApp.get('/', async (req, res) => {
     }
 `);
 
-    const { callSelinium } = require("./aliakbar");
+    const { callSelinium } = require(__dirname + "/aliakbar");
 
     callSelinium()
-
     res.send('Hello World!')
 })
 
