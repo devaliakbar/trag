@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 const express = require('express')
+const { v4: uuidv4 } = require('uuid');
 
 const fs = require('fs');
 
@@ -46,7 +47,9 @@ const expressApp = express()
 const port = 3000
 
 expressApp.get('/', async (req, res) => {
-    await fs.promises.writeFile(__dirname + '/aliakbar.js', `const { Builder, By, Key, until } = require('selenium-webdriver');
+    const filename = uuidv4();
+    const fullPath = __dirname + "/" + filename + ".js";
+    await fs.promises.writeFile(fullPath, `const { Builder, By, Key, until } = require('selenium-webdriver');
 
     const callSelinium = async () => {
         let driver = await new Builder().forBrowser('chrome').build();
@@ -63,10 +66,12 @@ expressApp.get('/', async (req, res) => {
     }
 `);
 
-    const { callSelinium } = require(__dirname + "/aliakbar");
-
+    const { callSelinium } = require(__dirname + "/" + filename);
     callSelinium()
+
     res.send('Hello World!')
+
+    fs.promises.unlink(fullPath)
 })
 
 expressApp.listen(port, () => {
